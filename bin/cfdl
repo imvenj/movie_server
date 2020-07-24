@@ -4,11 +4,17 @@ import sys
 import cloudscraper
 
 address = sys.argv[1]
-path = sys.argv[2]
+outputExists = len(sys.argv) == 3
+path = sys.argv[2] if outputExists else '/tmp/cfdl_page_content'
+
 scraper = cloudscraper.create_scraper()
 
 r = scraper.get(address, stream=True)
-with open(path, 'wb') as fd:
+flag = 'w' if outputExists else 'wb'
+
+with open(path, flag) as fd:
     for chunk in r.iter_content(chunk_size=128):
         fd.write(chunk)
 
+if not outputExists:
+    print(open(path).read())
